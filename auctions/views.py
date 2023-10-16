@@ -12,8 +12,9 @@ def index(request):
 
 
 def login_view(request):
-    if request.method == "POST":
-
+    if request.method != "POST":
+        return render(request, "auctions/login.html")
+    else:
         # Attempt to sign user in
         username = request.POST["username"]
         password = request.POST["password"]
@@ -27,8 +28,6 @@ def login_view(request):
             return render(request, "auctions/login.html", {
                 "message": "Invalid username and/or password."
             })
-    else:
-        return render(request, "auctions/login.html")
 
 
 def logout_view(request):
@@ -37,7 +36,9 @@ def logout_view(request):
 
 
 def register(request):
-    if request.method == "POST":
+    if request.method != "POST":
+        return render(request, "auctions/register.html")
+    else:
         username = request.POST["username"]
         email = request.POST["email"]
 
@@ -59,5 +60,3 @@ def register(request):
             })
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
-    else:
-        return render(request, "auctions/register.html")
