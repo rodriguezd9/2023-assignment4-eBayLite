@@ -16,7 +16,7 @@ class Listing(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     close_on = models.DateTimeField()
     # TODO: Consider creating folder structure for user/listing
-    imageLink = models.ImageField(upload_to="listingImages")
+    imageLink = models.URLField(max_length=200, )
     categories = models.ManyToManyField("Category", related_name="listings")
 
     def __str__(self):
