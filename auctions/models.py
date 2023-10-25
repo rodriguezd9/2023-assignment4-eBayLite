@@ -15,7 +15,6 @@ class Listing(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     close_on = models.DateTimeField()
-    # TODO: Consider creating folder structure for user/listing
     imageLink = models.URLField(max_length=200, )
     categories = models.ManyToManyField("Category", related_name="listings")
 
@@ -25,6 +24,7 @@ class Listing(models.Model):
 
 class Bid(models.Model):
     listing = models.ForeignKey("Listing", on_delete=models.CASCADE)
+    bidder = models.CharField(max_length=60)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     created_on = models.DateTimeField(auto_now_add=True)
 

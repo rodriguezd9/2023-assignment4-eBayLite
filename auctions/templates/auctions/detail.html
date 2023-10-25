@@ -1,0 +1,42 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    <h2>{{ listing.title }}</h2>
+{% endblock title %}
+
+{% block main %}
+    <p>{{ listing.title }} - <small>Created: {{ listing.created_on.date }}</small></p>
+    <img src="{{ listing.imageLink }}" width="600" alt="Item for sale">
+    <p>{{ listing.description | linebreaks }}</p>
+    <p>Current bid: ${{ listing.bidPrice }}</p>
+    <small>
+        Categories: {% for category in listing.categories.all %}
+        <a href="{% url 'listing_category' category.name %}">
+            {{ category.name }}
+        </a>
+    {% endfor %}
+    </small>
+
+    <h3>Leave a comment:</h3>
+    <form action="/listing/{{ listing.pk }}/" method="post">
+        {% csrf_token %}
+        <div>
+            {{ form.author }}
+        </div>
+        <div>
+            {{ form.body }}
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <h3>Comments:</h3>
+    {% for comment in comments %}
+        <p>
+            <b>{{ comment.author }}</b> wrote: <br>
+            <small>{{ comment.created_on.date }}</small>
+        </p>
+        <p>
+            {{ comment.body | linebreaks }}
+        </p>
+    {% endfor %}
+{% endblock main %}
