@@ -1,7 +1,7 @@
 {% extends "auctions/layout.html" %}
 
 {% block title %}
-    <h2>{{ listing.title }}</h2>
+    {{ listing.title }}
 {% endblock title %}
 
 {% block main %}
@@ -11,7 +11,7 @@
     <p>Current bid: ${{ listing.bidPrice }}</p>
     <small>
         Categories: {% for category in listing.categories.all %}
-        <a href="{% url 'listing_category' category.name %}">
+        <a href="{% url 'listings_by_category' category.name %}">
             {{ category.name }}
         </a>
     {% endfor %}
@@ -21,10 +21,10 @@
     <form action="/listing/{{ listing.pk }}/" method="post">
         {% csrf_token %}
         <div>
-            {{ form.author }}
+            {{ comment_form.author }}
         </div>
         <div>
-            {{ form.body }}
+            {{ comment_form.body }}
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>

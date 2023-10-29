@@ -26,13 +26,13 @@ class ListingForm(forms.Form):
     bidPrice = forms.DecimalField(
         max_digits=10,
         decimal_places=2,
-        widget=forms.DecimalField(
+        widget=forms.TextInput(
             attrs={"class": "form-control", "placeholder": "5.00"}
         ),
     )
     close_on = forms.DateTimeField(
         initial=datetime.now() + timedelta(weeks=1),
-        widget=forms.DateTimeField(
+        widget=forms.DateTimeInput(
             attrs={"class": "form-control"}
         ),
     )
@@ -63,8 +63,8 @@ class BidForm(forms.Form):
     amount = forms.DecimalField(
         max_digits=10,
         decimal_places=2,
-        widget=forms.DecimalField(
-            attrs={"class": "form-control", "placeholder": "5.00"}
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "placeholder": "10.00"}
         ),
     )
 

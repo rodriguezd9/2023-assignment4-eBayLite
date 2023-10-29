@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
+from .forms import CommentForm
 from .models import User, Listing, Bid, Comment, Category
 
 
@@ -64,18 +65,40 @@ def register(request):
 
 def listing_detail(request, pk):
     listing = Listing.objects.get(pk=pk)
-    comments = Comment.objects.filter(listing=listing)
     bids = Bid.objects.filter(listing=listing)
+    comment_form = CommentForm()
+    if request.method == "POST":
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = Comment(
+                author=comment_form.cleaned_data["author"],
+                body=comment_form.cleaned_data["body"],
+                listing=listing,
+            )
+            comment.save()
+            return HttpResponseRedirect(request.path_info)
+
+    comments = Comment.objects.filter(listing=listing).order_by("-created_on")
     context = {
         "listing": listing,
         "comments": comments,
+        "comment_form": CommentForm(),
         "bids": bids,
     }
 
     return render(request, "auctions/detail.html", context)
 
 
-def listing_category(request, category):
+def category_index(request):
+    categories = Category.objects.order_by("name")
+    context = {
+        "categories": categories,
+    }
+
+    return render(request, "auctions/category_index.html", context)
+
+
+def listings_by_category(request, category):
     listings = Listing.objects.filter(
         categories__name__contains=category
     ).order_by("-created_on")
