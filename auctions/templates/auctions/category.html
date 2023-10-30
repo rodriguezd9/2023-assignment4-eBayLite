@@ -7,11 +7,13 @@
 {% block main %}
     <h3>Listings for {{ category }}</h3>
     {% for listing in listings %}
-        <div>
-            <a href="{% url 'listing_detail' listing.id %}">
-                <img src="{{ listing.imageLink }}" width="100" alt="Item for sale">
-                {{ listing.title }} - ${{ listing.bidPrice }}
-            </a>
-        </div>
+        <a href="{% url 'listing_detail' listing.id %}">
+            <article>
+                <section>
+                    <img src="{{ listing.imageLink }}" width="100" alt="Item for sale">
+                    {{ listing.title }} - ${{ listing.bidPrice }}
+                </section>
+            </article>
+        </a>
     {% endfor %}
 {% endblock main %}

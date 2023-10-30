@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -10,8 +11,7 @@ class Listing(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     bidPrice = models.DecimalField(max_digits=10, decimal_places=2)
-    # TODO: Change seller to automatically pick up logged in user's name
-    seller = models.CharField(max_length=60)
+    seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     close_on = models.DateTimeField()
@@ -24,7 +24,7 @@ class Listing(models.Model):
 
 class Bid(models.Model):
     listing = models.ForeignKey("Listing", on_delete=models.CASCADE)
-    bidder = models.CharField(max_length=60)
+    bidder = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     created_on = models.DateTimeField(auto_now_add=True)
 
@@ -33,8 +33,7 @@ class Bid(models.Model):
 
 
 class Comment(models.Model):
-    # TODO: Change author to automatically pick up logged in user's name
-    author = models.CharField(max_length=60)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     body = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
     listing = models.ForeignKey("Listing", on_delete=models.CASCADE)

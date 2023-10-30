@@ -1,0 +1,21 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    {{ category }}
+{% endblock title %}
+
+{% block main %}
+    <h3>New Listing</h3>
+    <form action="/new_listing/" method="post">
+        {% csrf_token %}
+        <div>
+            {{ form.title }}
+            {{ form.description }}
+            {{ form.bidPrice }}
+            {{ form.close_on }}
+            {{ form.imageLink }}
+            {{ form.categories }}
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+{% endblock main %}

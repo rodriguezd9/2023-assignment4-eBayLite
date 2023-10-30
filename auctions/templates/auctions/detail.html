@@ -5,7 +5,7 @@
 {% endblock title %}
 
 {% block main %}
-    <p>{{ listing.title }} - <small>Created: {{ listing.created_on.date }}</small></p>
+    <p>{{ listing.title }} - <small>Created: {{ listing.created_on.date }} <br>Seller: {{ listing.seller }}</small></p>
     <img src="{{ listing.imageLink }}" width="600" alt="Item for sale">
     <p>{{ listing.description | linebreaks }}</p>
     <p>Current bid: ${{ listing.bidPrice }}</p>
@@ -21,9 +21,6 @@
     <form action="/listing/{{ listing.pk }}/" method="post">
         {% csrf_token %}
         <div>
-            {{ comment_form.author }}
-        </div>
-        <div>
             {{ comment_form.body }}
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
@@ -32,10 +29,8 @@
     <h3>Comments:</h3>
     {% for comment in comments %}
         <p>
-            <b>{{ comment.author }}</b> wrote: <br>
-            <small>{{ comment.created_on.date }}</small>
-        </p>
-        <p>
+            <small>{{ comment.created_on }}</small> <br>
+            <b>{{ comment.author }}</b> wrote:
             {{ comment.body | linebreaks }}
         </p>
     {% endfor %}

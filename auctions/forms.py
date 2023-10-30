@@ -5,13 +5,6 @@ from django.core.exceptions import ValidationError
 
 
 class ListingForm(forms.Form):
-    # TODO: Change seller to automatically pick up logged in user's name
-    seller = forms.CharField(
-        max_length=60,
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Seller Name"}
-        ),
-    )
     title = forms.CharField(
         max_length=255,
         widget=forms.TextInput(
@@ -53,13 +46,6 @@ class ListingForm(forms.Form):
 
 
 class BidForm(forms.Form):
-    # TODO: Figure out how to automatically grab logged in user
-    bidder = forms.CharField(
-        max_length=60,
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Your Name"}
-        ),
-    )
     amount = forms.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -70,12 +56,6 @@ class BidForm(forms.Form):
 
 
 class CommentForm(forms.Form):
-    author = forms.CharField(
-        max_length=60,
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Your Name"}
-        ),
-    )
     body = forms.CharField(
         widget=forms.Textarea(
             attrs={"class": "form-control", "placeholder": "Leave a comment!"}

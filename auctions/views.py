@@ -1,15 +1,22 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
+from django.db.models.functions import datetime
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .forms import CommentForm
+
+from .forms import CommentForm, ListingForm
 from .models import User, Listing, Bid, Comment, Category
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    current_date = datetime.Now
+    listings = Listing.objects.filter(close_on__gt=current_date).order_by("-created_on")
+    context = {
+        "listings": listings
+    }
+    return render(request, "auctions/index.html", context)
 
 
 def login_view(request):
@@ -71,7 +78,7 @@ def listing_detail(request, pk):
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid():
             comment = Comment(
-                author=comment_form.cleaned_data["author"],
+                author=request.user,
                 body=comment_form.cleaned_data["body"],
                 listing=listing,
             )
@@ -107,3 +114,25 @@ def listings_by_category(request, category):
         "listings": listings,
     }
     return render(request, "auctions/category.html", context)
+
+
+def new_listing(request):
+    form = ListingForm()
+    if request.method == "POST":
+        form = ListingForm(request.POST)
+        if form.is_valid():
+            listing = Listing(
+                title=form.cleaned_data["title"],
+                description=form.cleaned_data["description"],
+                bidPrice=form.cleaned_data["bidPrice"],
+                seller=request.user,
+                close_on=form.cleaned_data["close_on"],
+                imageLink=form.cleaned_data["imageLink"],
+                categories=form.cleaned_data["categories"]
+            )
+            listing.save()
+            return HttpResponseRedirect(request.path_info)
+    context = {
+        "form": form,
+    }
+    return render(request, "auctions/new_listing.html", context)
