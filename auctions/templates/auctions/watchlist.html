@@ -1,0 +1,24 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    Watchlist
+{% endblock title %}
+
+{% block main %}
+    <h3>Watched Listings:</h3>
+    {% for listing in listings %}
+        <a href="{% url 'listing_detail' listing.id %}">
+            <article>
+                <section>
+                    <img src="{{ listing.imageLink }}" width="100" alt="Item for sale">
+                    {{ listing.title }} - ${{ listing.bidPrice }}
+                    {% if not listing.isListingActive %}
+                        - <span style="color: red">Listing Closed</span>
+                    {% endif %}
+                    <br>
+                    {{ listing.description }}
+                </section>
+            </article>
+        </a>
+    {% endfor %}
+{% endblock main %}

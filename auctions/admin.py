@@ -1,5 +1,5 @@
 from django.contrib import admin
-from auctions.models import Bid, Category, Comment, Listing
+from auctions.models import Bid, Category, Comment, Listing, User
 
 
 @admin.register(Bid)
@@ -19,4 +19,8 @@ class CommentAdmin(admin.ModelAdmin):
 
 @admin.register(Listing)
 class ListingAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
     pass

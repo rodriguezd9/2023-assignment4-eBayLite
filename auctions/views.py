@@ -124,7 +124,7 @@ def new_listing(request):
                 bidPrice=form.cleaned_data["bidPrice"],
                 seller=request.user,
                 imageLink=form.cleaned_data["imageLink"],
-                category=form.cleaned_data["category"]
+                category=form.cleaned_data["category"],
             )
             listing.save()
             if listing.imageLink == "":
@@ -135,3 +135,13 @@ def new_listing(request):
         "form": form,
     }
     return render(request, "auctions/new_listing.html", context)
+
+
+def watchlist(request):
+    listings = (Listing.objects.filter(
+        user=request.user.id
+    ).order_by("-created_on"))
+    context = {
+        "listings": listings,
+    }
+    return render(request, "auctions/watchlist.html", context)

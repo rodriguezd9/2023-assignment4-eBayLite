@@ -4,7 +4,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    pass
+    watched_listings = models.ManyToManyField("Listing")
 
 
 class Listing(models.Model):
