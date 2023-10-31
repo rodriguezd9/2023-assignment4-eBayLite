@@ -129,7 +129,7 @@ def new_listing(request):
             listing.save()
             if listing.imageLink == "":
                 listing.imageLink = "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"
-            listing.save()
+                listing.save()
             return HttpResponseRedirect("../listing/" + str(listing.id))
     context = {
         "form": form,
