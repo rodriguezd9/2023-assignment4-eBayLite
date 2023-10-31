@@ -1,7 +1,6 @@
-from datetime import datetime, timedelta
-
 from django import forms
-from django.core.exceptions import ValidationError
+
+from auctions.models import Category
 
 
 class ListingForm(forms.Form):
@@ -23,26 +22,20 @@ class ListingForm(forms.Form):
             attrs={"class": "form-control", "placeholder": "5.00"}
         ),
     )
-    close_on = forms.DateTimeField(
-        initial=datetime.now() + timedelta(weeks=1),
-        widget=forms.DateTimeInput(
-            attrs={"class": "form-control"}
-        ),
-    )
     imageLink = forms.URLField(
         max_length=200,
+        required=False,
         widget=forms.TextInput(
             attrs={"class": "form-control", "placeholder": "Image URL"}
         ),
     )
-
-    # TODO: Figure out how to add categories
-
-    def clean_close_on(self):
-        close_on = self.cleaned_data['close_on']
-        if close_on <= datetime.now():
-            raise ValidationError("The date and time must be in the future.")
-        return close_on
+    category = forms.ModelChoiceField(
+        required=False,
+        widget=forms.Select(
+            attrs={"class": "form-control"},
+        ),
+        queryset=Category.objects.all()
+    )
 
 
 class BidForm(forms.Form):

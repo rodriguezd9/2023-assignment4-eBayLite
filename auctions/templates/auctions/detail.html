@@ -10,11 +10,10 @@
     <p>{{ listing.description | linebreaks }}</p>
     <p>Current bid: ${{ listing.bidPrice }}</p>
     <small>
-        Categories: {% for category in listing.categories.all %}
-        <a href="{% url 'listings_by_category' category.name %}">
-            {{ category.name }}
+        Category:
+        <a href="{% url 'listings_by_category' listing.category %}">
+            {{ listing.category }}
         </a>
-    {% endfor %}
     </small>
 
     <h3>Leave a comment:</h3>

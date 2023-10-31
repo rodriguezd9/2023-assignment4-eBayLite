@@ -1,18 +1,16 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.db.models.functions import datetime
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-
 
 from .forms import CommentForm, ListingForm
 from .models import User, Listing, Bid, Comment, Category
 
 
 def index(request):
-    current_date = datetime.Now
-    listings = Listing.objects.filter(close_on__gt=current_date).order_by("-created_on")
+    listings = Listing.objects.filter(isListingActive=True).order_by("-created_on")
     context = {
         "listings": listings
     }
@@ -73,7 +71,6 @@ def register(request):
 def listing_detail(request, pk):
     listing = Listing.objects.get(pk=pk)
     bids = Bid.objects.filter(listing=listing)
-    comment_form = CommentForm()
     if request.method == "POST":
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid():
@@ -107,7 +104,7 @@ def category_index(request):
 
 def listings_by_category(request, category):
     listings = Listing.objects.filter(
-        categories__name__contains=category
+        category__name=category, isListingActive=True
     ).order_by("-created_on")
     context = {
         "category": category,
@@ -126,12 +123,14 @@ def new_listing(request):
                 description=form.cleaned_data["description"],
                 bidPrice=form.cleaned_data["bidPrice"],
                 seller=request.user,
-                close_on=form.cleaned_data["close_on"],
                 imageLink=form.cleaned_data["imageLink"],
-                categories=form.cleaned_data["categories"]
+                category=form.cleaned_data["category"]
             )
             listing.save()
-            return HttpResponseRedirect(request.path_info)
+            if listing.imageLink == "":
+                listing.imageLink = "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"
+            listing.save()
+            return HttpResponseRedirect("../listing/" + str(listing.id))
     context = {
         "form": form,
     }

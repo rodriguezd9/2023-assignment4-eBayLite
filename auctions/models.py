@@ -14,9 +14,9 @@ class Listing(models.Model):
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
-    close_on = models.DateTimeField()
-    imageLink = models.URLField(max_length=200, )
-    categories = models.ManyToManyField("Category", related_name="listings")
+    isListingActive = models.BooleanField(default=True)
+    imageLink = models.URLField(max_length=200, null=True)
+    category = models.ForeignKey("Category", on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f'{self.title} with current bid: {self.bidPrice}'
@@ -43,7 +43,7 @@ class Comment(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=40)
 
     class Meta:
         verbose_name_plural = "categories"
