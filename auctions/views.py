@@ -138,10 +138,13 @@ def new_listing(request):
 
 
 def watchlist(request):
-    listings = (Listing.objects.filter(
-        user=request.user.id
-    ).order_by("-created_on"))
-    context = {
-        "listings": listings,
-    }
-    return render(request, "auctions/watchlist.html", context)
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('login'))
+    else:
+        listings = (Listing.objects.filter(
+            user=request.user.id
+        ).order_by("-created_on"))
+        context = {
+            "listings": listings,
+        }
+        return render(request, "auctions/watchlist.html", context)
