@@ -19,13 +19,29 @@
         </a>
     </small>
 
+    {% if user.is_authenticated %}
+
+    <form action="/listing/{{ listing.pk }}/" method="post">
+        {% csrf_token %}
+        <div>
+            {{ bid_form }}
+        </div>
+        <button type="submit" name="bid_submit" class="btn btn-primary">Submit</button>
+    </form>
+
     <form action="/listing/{{ listing.pk }}/" method="post">
         {% csrf_token %}
         <div>
             {{ comment_form.body }}
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" name="comment_submit" class="btn btn-primary">Submit</button>
     </form>
+
+    {% else %}
+        <h3>Please <a href="{% url 'login' %}">
+            log in
+        </a> to comment, bid, or add to watchlist.</h3>
+    {% endif %}
 
     <h4>Comments:</h4>
     {% for comment in comments %}

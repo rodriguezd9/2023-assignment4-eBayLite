@@ -71,6 +71,7 @@ def register(request):
 def listing_detail(request, pk):
     listing = Listing.objects.get(pk=pk)
     bids = Bid.objects.filter(listing=listing)
+    user = request.user
     if request.method == "POST":
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid():
@@ -88,6 +89,7 @@ def listing_detail(request, pk):
         "comments": comments,
         "comment_form": CommentForm(),
         "bids": bids,
+        "user": user,
     }
 
     return render(request, "auctions/detail.html", context)
