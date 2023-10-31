@@ -6,6 +6,9 @@
 
 {% block main %}
     <p>{{ listing.title }} - <small>Created: {{ listing.created_on.date }} <br>Seller: {{ listing.seller }}</small></p>
+    {% if not listing.isListingActive %}
+        <h3 style="color: red">Listing Closed</h3>
+    {% endif %}
     <img src="{{ listing.imageLink }}" width="600" alt="Item for sale">
     <p>{{ listing.description | linebreaks }}</p>
     <p>Current bid: ${{ listing.bidPrice }}</p>

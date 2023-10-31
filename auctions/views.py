@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -130,7 +130,7 @@ def new_listing(request):
             if listing.imageLink == "":
                 listing.imageLink = "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"
                 listing.save()
-            return HttpResponseRedirect("../listing/" + str(listing.id))
+            return HttpResponseRedirect(reverse('listing_detail', args=[listing.id]))
     context = {
         "form": form,
     }
