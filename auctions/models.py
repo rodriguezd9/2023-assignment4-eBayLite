@@ -11,12 +11,13 @@ class Listing(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     bidPrice = models.DecimalField(max_digits=10, decimal_places=2)
-    seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="seller")
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     isListingActive = models.BooleanField(default=True)
     imageLink = models.URLField(max_length=200, null=True)
     category = models.ForeignKey("Category", on_delete=models.CASCADE, null=True)
+    winner = models.ForeignKey("User", on_delete=models.CASCADE, related_name="winner", null=True)
 
     def __str__(self):
         return f'{self.title} with current bid: {self.bidPrice}'

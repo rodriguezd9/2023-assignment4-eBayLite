@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .forms import CommentForm, ListingForm
+from .forms import CommentForm, ListingForm, BidForm
 from .models import User, Listing, Bid, Comment, Category
 
 
@@ -70,9 +70,32 @@ def register(request):
 
 def listing_detail(request, pk):
     listing = Listing.objects.get(pk=pk)
-    bids = Bid.objects.filter(listing=listing)
+    comments = Comment.objects.filter(listing=listing).order_by("-created_on")
+    bids = Bid.objects.filter(listing=listing).order_by("-amount")
+    highest_bidder = ""
     user = request.user
-    if request.method == "POST":
+
+    if bids.count() != 0:
+        highest_bidder = bids[0].bidder
+
+    if request.method == "POST" and "close_auction" in request.POST:
+        if highest_bidder == "":
+            listing.winner = request.user
+        else:
+            listing.winner = highest_bidder
+        listing.isListingActive = False
+        listing.save()
+        return HttpResponseRedirect(request.path_info)
+
+    if request.method == "POST" and "add_to_watchlist" in request.POST:
+        user.watched_listings.add(listing)
+        return HttpResponseRedirect(request.path_info)
+
+    if request.method == "POST" and "remove_from_watchlist" in request.POST:
+        user.watched_listings.remove(listing)
+        return HttpResponseRedirect(request.path_info)
+
+    if request.method == "POST" and "comment_submit" in request.POST:
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid():
             comment = Comment(
@@ -83,12 +106,37 @@ def listing_detail(request, pk):
             comment.save()
             return HttpResponseRedirect(request.path_info)
 
-    comments = Comment.objects.filter(listing=listing).order_by("-created_on")
+    if request.method == "POST" and listing.isListingActive and "bid_submit" in request.POST:
+        bid_form = BidForm(request.POST)
+        if bid_form.is_valid():
+            if bid_form.cleaned_data["amount"] <= listing.bidPrice:
+                context = {
+                    "listing": listing,
+                    "comments": comments,
+                    "comment_form": CommentForm(),
+                    "highest_bidder": highest_bidder,
+                    "bid_form": BidForm(),
+                    "user": user,
+                    "error": "Bid amount too low",
+                }
+                return render(request, "auctions/detail.html", context)
+            else:
+                bid = Bid(
+                    bidder=request.user,
+                    amount=bid_form.cleaned_data["amount"],
+                    listing=listing,
+                )
+                bid.save()
+                listing.bidPrice = bid.amount
+                listing.save()
+                return HttpResponseRedirect(request.path_info)
+
     context = {
         "listing": listing,
         "comments": comments,
         "comment_form": CommentForm(),
-        "bids": bids,
+        "highest_bidder": highest_bidder,
+        "bid_form": BidForm(),
         "user": user,
     }
 
