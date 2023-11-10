@@ -68,68 +68,77 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
 
 
-def listing_detail(request, pk):
+def get_objects(request, pk):
     listing = Listing.objects.get(pk=pk)
     comments = Comment.objects.filter(listing=listing).order_by("-created_on")
     bids = Bid.objects.filter(listing=listing).order_by("-amount")
-    highest_bidder = ""
+    return listing, comments, bids
+
+
+def close_auction(request, listing, highest_bidder):
+    listing.winner = highest_bidder if highest_bidder else request.user
+    listing.isListingActive = False
+    listing.save()
+    return HttpResponseRedirect(request.path_info)
+
+
+def manage_watchlist(request, listing, add=True):
+    if add:
+        request.user.watched_listings.add(listing)
+    else:
+        request.user.watched_listings.remove(listing)
+    return HttpResponseRedirect(request.path_info)
+
+
+def post_comment(request, listing):
+    comment_form = CommentForm(request.POST)
+    if comment_form.is_valid():
+        Comment(author=request.user, body=comment_form.cleaned_data["body"], listing=listing).save()
+    return HttpResponseRedirect(request.path_info)
+
+
+def submit_bid(request, listing, highest_bidder):
+    bid_form = BidForm(request.POST)
+    if not bid_form.is_valid() or bid_form.cleaned_data["amount"] <= listing.bidPrice:
+        context = {
+            "listing": listing,
+            "comments": listing.comments,
+            "comment_form": CommentForm(),
+            "highest_bidder": highest_bidder,
+            "bid_form": bid_form,
+            "user": request.user,
+            "error": "Bid amount too low",
+        }
+        return render(request, "auctions/detail.html", context)
+
+    bid = Bid(bidder=request.user, amount=bid_form.cleaned_data["amount"], listing=listing)
+    bid.save()
+    listing.bidPrice = bid.amount
+    listing.save()
+    return HttpResponseRedirect(request.path_info)
+
+
+def listing_detail(request, pk):
+    listing, comments, bids = get_objects(request, pk)
+
+    highest_bidder = bids[0].bidder if bids.count() != 0 else ""
     user = request.user
 
-    if bids.count() != 0:
-        highest_bidder = bids[0].bidder
+    if request.method == "POST":
+        if "close_auction" in request.POST:
+            return close_auction(request, listing, highest_bidder)
 
-    if request.method == "POST" and "close_auction" in request.POST:
-        if highest_bidder == "":
-            listing.winner = request.user
-        else:
-            listing.winner = highest_bidder
-        listing.isListingActive = False
-        listing.save()
-        return HttpResponseRedirect(request.path_info)
+        if "add_to_watchlist" in request.POST:
+            return manage_watchlist(request, listing)
 
-    if request.method == "POST" and "add_to_watchlist" in request.POST:
-        user.watched_listings.add(listing)
-        return HttpResponseRedirect(request.path_info)
+        if "remove_from_watchlist" in request.POST:
+            return manage_watchlist(request, listing, add=False)
 
-    if request.method == "POST" and "remove_from_watchlist" in request.POST:
-        user.watched_listings.remove(listing)
-        return HttpResponseRedirect(request.path_info)
+        if "comment_submit" in request.POST:
+            return post_comment(request, listing)
 
-    if request.method == "POST" and "comment_submit" in request.POST:
-        comment_form = CommentForm(request.POST)
-        if comment_form.is_valid():
-            comment = Comment(
-                author=request.user,
-                body=comment_form.cleaned_data["body"],
-                listing=listing,
-            )
-            comment.save()
-            return HttpResponseRedirect(request.path_info)
-
-    if request.method == "POST" and listing.isListingActive and "bid_submit" in request.POST:
-        bid_form = BidForm(request.POST)
-        if bid_form.is_valid():
-            if bid_form.cleaned_data["amount"] <= listing.bidPrice:
-                context = {
-                    "listing": listing,
-                    "comments": comments,
-                    "comment_form": CommentForm(),
-                    "highest_bidder": highest_bidder,
-                    "bid_form": BidForm(),
-                    "user": user,
-                    "error": "Bid amount too low",
-                }
-                return render(request, "auctions/detail.html", context)
-            else:
-                bid = Bid(
-                    bidder=request.user,
-                    amount=bid_form.cleaned_data["amount"],
-                    listing=listing,
-                )
-                bid.save()
-                listing.bidPrice = bid.amount
-                listing.save()
-                return HttpResponseRedirect(request.path_info)
+        if listing.isListingActive and "bid_submit" in request.POST:
+            return submit_bid(request, listing, highest_bidder)
 
     context = {
         "listing": listing,

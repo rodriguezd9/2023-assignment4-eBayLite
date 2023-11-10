@@ -111,3 +111,69 @@ including the current price for the listing.
 - You are encouraged to modify the CSS to make the website your own! The CSS
   that you’ll be supplied with is based on the [simplecss](https://simplecss.org/) that we’ve used before,
   with a few minor tweaks. A great css library to consider is [bootstrap](https://getbootstrap.com/).
+
+# Cool eBayLite
+This project involves adding some coolness to your eBayLite web app that you just
+completed. You are required to work with a partner; if you don’t have one by next
+Wednesday’s class (Nov 8), I’ll assign you one randomly. Each teams can add the coolness
+(to be discussed below) to both of your EBayLite solutions, or to just one of them. Your call.
+There are three features you need to implement:
+
+### Feature 1
+Add/remove listings to a user’s watchlist without causing a full page refresh. Your listing should have a pair of related
+icons indicating whether or not the listing is on the logged-in user’s watchlist. Clicking on the icon will add or remove that
+listing from the watchlist asynchronously, using JavaScript.
+
+It’s up to you to pick the pair of icons. Also, if there is no logged in user, you can either
+remove the icon, or, ~~better,~~ show it visually as “disabled”.
+
+There are 3 cases to consider for a logged-in user:
+
+1. Viewing the listing. This one is easy… The watchlist icon is on the page, either in
+“true” or “false” state. Clicking on the icon changes the state of the icon, and more
+importantly, adds or removes the listing from the user’s watchlist.
+2. Listing of items for “active listings”, “my listings”, “listings in a category”: The display
+of the listing header information must also show the watchlist icon. A user should be
+able to quickly go through the list, clicking on the watchlist icon. Obviously, the
+display of the icon will change and the state of the listing on the user’s watchlist will
+change.
+3. Listings of items on the “watchlist” page. This is more interesting because all the
+listings on this page are on the watchlist. If you click the icon, should the listing be
+removed from the page (some fun JavaScript manipulation of the DOM) or should
+the listing stay, but the icon is changed to indicate that the item is no longer in the
+watchlist? In the latter case, the next time the page is refreshed, the items won’t
+show up in the watchlist listing. It’s up to you to code whatever you think is the
+better user experience.
+
+How to get started? I would consider attaching an “onclick” event listener to the watchlist
+icon (an <img>). To change what image an <img’> element is showing, you can code
+document.querySelect(‘#foo’).src=new_url.;, where foo is the id of the <img> you want
+changed. Another strategy is to have two images, and play around with the display
+property of each such that only one is visible at any given time, occupying the same screen
+real estate.
+
+### Feature 2
+Add a comment without causing a page refresh from the server. The user experience
+should be that they add a comment; the comment appears but nothing else on the page
+unrelated to the new comment should change or get refreshed.
+
+### Feature 3
+Enhance the look-and-feel of your app with one (or more!) snazzy javascript-based
+widget(s). Obvious candidates are an accordion and a lightbox.
+
+● The Accordion Widget is used to display text in a collapsed, condensed manner, letting you save
+space while still presenting an abundance of content. With the Accordion, visitors can scan
+the item titles, and choose to expand an item only if it is of interest. https://api.jqueryui.com/accordion/
+
+● A lightbox will make your image popout while the rest of the website.
+https://code.tutsplus.com/articles/best-free-open-source-javascript-lightbox-widgets-and-plugins--cms-39898
+
+In general, you will need to add a link to a .css and .js file in the <head> section of your
+html. You will generate the correct tags in your html, and add a line or two of JavaScript to
+get things fired up. You’ll find that most of the widgets have optional parameters; feel free
+to explore.
+
+There are quite a few libraries out there for accordion and lightbox widgets. And many
+other slick widgets. Many rely on other libraries such as jquery and bootstrap; be careful
+when you add those libraries, as it might change the look of your app. The look might be
+better, so ymmv.
