@@ -119,6 +119,7 @@ STATIC_URL = '/static/'
 # Auto-created primary key used when not defining a primary key type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Logging config
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -128,7 +129,7 @@ LOGGING = {
             "style": "{",
         },
         "simple": {
-            "format": "{levelname} {message}",
+            "format": "{levelname} {module} {message}",
             "style": "{",
         },
     },
@@ -138,8 +139,15 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
+        # 'file': {
+        #     'level': 'DEBUG',
+        #     'class': 'logging.FileHandler',
+        #     'filename': 'commerce/debug.log',
+        #     'formatter': 'verbose',
+        # },
     },
     'root': {
+        # 'handlers': ['console', 'file'],
         'handlers': ['console'],
         'level': 'DEBUG',
     },

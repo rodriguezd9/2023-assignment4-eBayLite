@@ -28,7 +28,7 @@ def login_view(request):
         # Attempt to sign user in
         username = request.POST["username"]
         password = request.POST["password"]
-        logger.debug("Login attempt username: " + username + " and password: " + password)
+        # logger.debug("Login attempt username: " + username + " and password: " + password)
         user = authenticate(request, username=username, password=password)
 
         # Check if authentication successful
@@ -38,7 +38,7 @@ def login_view(request):
             return HttpResponseRedirect(reverse("index"))
         else:
             logger.warning("User was not found: " + username)
-            # logger.warning("User was not found: " + username, stack_info=True)
+            # logger.debug("User was not found: " + username, stack_info=True)
             return render(request, "auctions/login.html", {
                 "message": "Invalid username and/or password."
             })
