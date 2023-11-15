@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 
@@ -7,6 +9,8 @@ from django.urls import reverse
 
 from .forms import CommentForm, ListingForm, BidForm
 from .models import User, Listing, Bid, Comment, Category
+
+logger = logging.getLogger(__name__)
 
 
 def index(request):
@@ -24,13 +28,17 @@ def login_view(request):
         # Attempt to sign user in
         username = request.POST["username"]
         password = request.POST["password"]
+        logger.debug("Login attempt username: " + username + " and password: " + password)
         user = authenticate(request, username=username, password=password)
 
         # Check if authentication successful
         if user is not None:
             login(request, user)
+            logger.info(username + " logged in successfully: ")
             return HttpResponseRedirect(reverse("index"))
         else:
+            logger.warning("User was not found: " + username)
+            # logger.warning("User was not found: " + username, stack_info=True)
             return render(request, "auctions/login.html", {
                 "message": "Invalid username and/or password."
             })
