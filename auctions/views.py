@@ -72,6 +72,7 @@ def listing_detail(request, pk):
     listing = Listing.objects.get(pk=pk)
     comments = Comment.objects.filter(listing=listing).order_by("-created_on")
     bids = Bid.objects.filter(listing=listing).order_by("-amount")
+    #MHB: This variable is set to hold a User object; the default should be None rather than an empty string
     highest_bidder = ""
     user = request.user
 
@@ -85,6 +86,7 @@ def listing_detail(request, pk):
             listing.winner = highest_bidder
         listing.isListingActive = False
         listing.save()
+        #MHB: Why path_info rather than reverse('listing' pk=...)?
         return HttpResponseRedirect(request.path_info)
 
     if request.method == "POST" and "add_to_watchlist" in request.POST:
@@ -115,6 +117,8 @@ def listing_detail(request, pk):
                     "comments": comments,
                     "comment_form": CommentForm(),
                     "highest_bidder": highest_bidder,
+                    #MHB: This should be bid_form so other error message are captured, and
+                    #MHB:   whatever user typed in stays around
                     "bid_form": BidForm(),
                     "user": user,
                     "error": "Bid amount too low",
@@ -153,6 +157,9 @@ def category_index(request):
 
 
 def listings_by_category(request, category):
+    #MHB: I'm not a fan of using the name of the category rather than an id. 
+    #MHB: If you use the name, you are assuming it's unique... so in the definition
+    #MHB: of Category you need to add a unique=True constraint
     listings = Listing.objects.filter(
         category__name=category, isListingActive=True
     ).order_by("-created_on")
@@ -168,6 +175,9 @@ def new_listing(request):
     if request.method == "POST":
         form = ListingForm(request.POST)
         if form.is_valid():
+            #MHB: Why not: 
+            #MHB    listing = form.save(commit=False) 
+            #MHB    list.seller = request.user
             listing = Listing(
                 title=form.cleaned_data["title"],
                 description=form.cleaned_data["description"],
